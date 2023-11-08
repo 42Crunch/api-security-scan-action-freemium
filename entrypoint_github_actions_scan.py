@@ -247,11 +247,16 @@ def get_running_configuration() -> RunningConfiguration:
     )
 
 
-def discovery_run(running_config: RunningConfiguration, base_dir: str, binaries: str):
+def scan_run(running_config: RunningConfiguration, base_dir: str, binaries: str):
 
     # Create output file name for report from input file name
     openapi_file = os.path.splitext(os.path.basename(running_config.api_definition))[0]
     scan_output_report = os.path.join(base_dir, f"{openapi_file}.audit-report.json")
+
+    # TODO: FIX THIS
+    openapi_file = "vampy-openapi"
+    running_config.api_definition = "vampy-openapi.json"
+    scan_output_report = "vampy-openapi.scan-result.json"
 
     #
     # Run 42Crunch cli scan
@@ -331,7 +336,7 @@ def main():
     running_config = get_running_configuration()
 
     # Run discovery
-    discovery_run(running_config, current_dir, binary)
+    scan_run(running_config, current_dir, binary)
 
 
 # Main script execution
