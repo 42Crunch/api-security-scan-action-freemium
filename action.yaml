@@ -1,6 +1,6 @@
 # action.yml
-name: "42Crunch REST API Dynamic Security Testing"
-description: "The REST API Static Security Testing action adds an automatic dynamic application security testing (DAST) to your workflows"
+name: "42Crunch REST API Dynamic Security Testing Freemium"
+description: "This action adds 42Crunch dynamic API security testing (DAST) to your workflows."
 inputs:
   upload-to-code-scanning:
     description: "Upload results to Code Scanning Alerts"
