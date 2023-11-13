@@ -22,7 +22,7 @@ class RunningConfiguration:
     #
     # Configurable parameters
     #
-    target_host: str
+    target_url: str
     api_definition: str
     log_level: str = "INFO"
     data_enrich: bool = False
@@ -43,7 +43,7 @@ class RunningConfiguration:
     def __repr__(self):
         return f"""
 RunningConfiguration:
-    target_host: {self.target_host}
+    target_url: {self.target_url}
     log_level: {self.log_level}
     data_enrich: {self.data_enrich}
     upload_to_code_scanning: {self.upload_to_code_scanning}
@@ -235,7 +235,7 @@ def get_running_configuration() -> RunningConfiguration:
         sarif_report=_none_or_empty(os.getenv("INPUT_SARIF-REPORT", None)),
         export_as_pdf=_none_or_empty(os.getenv("INPUT_EXPORT-AS-PDF", None)),
         upload_to_code_scanning=upload_to_code_scanning,
-        target_host=os.getenv("INPUT_TARGET-HOST", None),
+        target_url=os.getenv("INPUT_TARGET-URL", None),
         api_credential=os.getenv("INPUT_API-CREDENTIAL", None),
 
         github_token=os.getenv("INPUT_TOKEN", None),

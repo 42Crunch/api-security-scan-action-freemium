@@ -9,7 +9,7 @@ inputs:
   token:
     description: "Personal Access Token"
     default: ${{ github.token }}
-  target-host:
+  target-url:
     description: "The URL of the API deployment used by the scan. It must be a public URL or an internal URL accessible from the runner."
     required: true
   api-definition:
