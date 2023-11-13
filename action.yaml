@@ -13,7 +13,7 @@ inputs:
     description: "The URL of the API deployment used by the scan. It must be a public URL or an internal URL accessible from the runner."
     required: true
   api-definition:
-    description: "Filename of the API to scan , relative to the workspace root."
+    description: "Filename of the API to scan, relative to the workspace root."
     required: true
   api-credential:
     description: "The API key or token required to invoke the API hosted at target-host - This value can come from a GitHub secret or dynamically obtained in a previous pipeline step."
@@ -25,14 +25,10 @@ inputs:
   data-enrich:
     description: "Enrich the OpenAPI file leveraging the default data dictionary"
     required: false
-    default: "true"
+    default: "false"
   sarif-report:
     description: "SARIF report"
     required: false
-  export-as-pdf:
-    description: "Export as PDF"
-    required: false
-    default: "false"
 
 
 branding:
