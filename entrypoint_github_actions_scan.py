@@ -197,6 +197,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     # Upload to GitHub code scanning
     #
     if running_config.upload_to_code_scanning:
+        logger.debug("Uploading SARIF report to GitHub code scanning")
         upload_sarif(
             github_token=running_config.github_token,
             github_repository=running_config.github_repository,
