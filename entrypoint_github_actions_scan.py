@@ -130,9 +130,6 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     else:
         msg = f"   API definition file found: {running_config.api_definition}"
 
-    for f in os.listdir("api-specifications"):
-        logger.debug(f"   API definition file found: {f}")
-
     logger.debug(msg)
 
     #
