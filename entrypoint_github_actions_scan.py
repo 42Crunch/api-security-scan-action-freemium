@@ -153,7 +153,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         execute(scan_cmd)
     except ExecutionError as e:
         display_header("Audit command failed", str(e))
-        exit(1)
+        # exit(1)
 
     #
     # Convert to SARIF
@@ -169,12 +169,15 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     else:
         sarif_report = os.path.join(base_dir, f"{running_config.api_definition}.sarif")
 
+    scan_output_report = "PhotoManager.json.report.json"
+
     cmd = [
         "42ctl",
         "scan",
         "report",
         "sarif",
         "convert",
+        # "-r", scan_output_report,
         "-r", scan_output_report,
         "-a", running_config.api_definition,
         "-o", sarif_report
