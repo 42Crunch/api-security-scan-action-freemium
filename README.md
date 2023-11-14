@@ -2,37 +2,40 @@
 
 42Crunch [API Conformance Scan](https://docs.42crunch.com/latest/content/concepts/api_contract_conformance_scan.htm) serves two purposes:
 
-- Testing the resilience and behavior of APIs by automatically generating security tests from the APIs OpenAPI (a.k.a Swagger) definition. Scan reproduces the typical behaviour of a hacker by injecting bad payloads, bad tokens, use invalid HTTP verbs and paths. It helps detecting vulnerabilities early in the API life cycle, especially those associated to the [OWASP API Security Top 10](https://apisecurity.io/owasp-api-security-top-10/owasp-api-security-top-10-project/).
+- Testing the resilience and behavior of APIs by automatically generating security tests from the APIs' OpenAPI (formerly Swagger) definition. Scan reproduces the typical behavior of a hacker by injecting bad payloads, bad tokens, and using invalid HTTP verbs and paths. This helps detect vulnerabilities early in the API life cycle, especially those associated with the [OWASP API Security Top 10](https://apisecurity.io/owasp-api-security-top-10/owasp-api-security-top-10-project/).
 - Validating that the implementation of the API conforms to its established contract: Scan checks all responses against the OpenAPI definition and detects unexpected responses and data leaks.
 
 APIs which thoroughly enforce compliance to an established contract are far more resilient to all types of attacks.
 
-You can use this action to test an individual API, identified by its API contract (OpenAPI file). You will need to supply a target URL for the API, and a credential to invoke the API. 
+You can use this action to test an individual API, identified by its OpenAPI definition. You must supply a target URL and a credential to invoke the API.
 
-You can learn more about 42Crunch Scan by watching a 5 minute introduction video  [here](https://42crunch.com/free-user-faq/).
+You can learn more about 42Crunch Scan by watching a 5 minute introduction video [here](https://42crunch.com/free-user-faq/).
 
-![](https://img.shields.io/badge/Warning-orange)  We recommend that you do <u>not</u> target a production system. While the tool does not try to inject malicious payloads, it is possible that the API implementation is not resilient enough to handle the tests, and may crash or behave unexpectedly. 
+![](https://img.shields.io/badge/Warning-orange)  We recommend that you do <u>not</u> target a production system. While the tool does not try to inject malicious payloads, it is possible that the API implementation is not resilient enough to handle the tests and may crash or behave unexpectedly. 
 
 ![](https://img.shields.io/badge/Please%20read-red)  You may only use 42Crunch Scan against APIs that you own, but not those of third parties.
 
-## Action inputs
+## Action parameters
 
 ### `api-definition`
 
-Filename of the API to scan , relative to the workspace root, for example `myOAS.json` or `OASFiles/openweather.yaml`
+Filename of the API to scan, relative to the workspace root, for example `myOAS.json` or `OASFiles/openweather.yaml`
 
 ### `api-credential`
 
-The API key or token required to invoke the API hosted at `target-url` - This value can come from a GitHub secret or dynamically obtained in a previous pipeline step.
+The API key or token required to invoke the API hosted at `target-url` - This value can come from a GitHub secret or can be dynamically obtained from a previous pipeline step.
 
 ### `target-url`
 
-The URL of the API deployment used by the scan. It must be accessible from the CI/CD platform. This URL contains the host **as well as the API basePath**, for example : https://apis.acme.com/apis/v1
+The URL of the API deployment used by the scan. This URL contains the host **as well as the API basePath**, for example : https://apis.acme.com/apis/v1. It must be accessible from the CI/CD platform. 
 
 ### `upload-to-code-scanning`
 
-Upload the scan results in SARIF format to [Github Code Scanning](https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/about-code-scanning).  Note that the workflow must have specific permissions for this step to be successful. This assumes you have Github Advanced security enabled.
+Upload the scan results in SARIF format to [Github Code Scanning](https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/about-code-scanning). This assumes you have Github Advanced security enabled. 
+
 Default is `false`.
+
+Note that the workflow must have specific permissions for this step to be successful. 
 
 ```YAML
 ...
@@ -51,17 +54,17 @@ Default is `INFO`.
 
 ### `data-enrich`
 
-Enrichs the OpenAPI file leveraging the default data dictionary. For each property with a standard format (such as uuid or date-time), patterns and constraints will be added to the OpenAPI file before it is tested. 
+Enriches the OpenAPI file by leveraging the default data dictionary. For each property with a standard format (such as uuid or date-time), patterns and constraints will be added to the OpenAPI file before running the scan. 
 Default is ` true`.
 
 ### `sarif-report`
 
-Converts the scan raw JSON format to SARIF and save the results into a specified file. 
+Converts the raw scan JSON format to SARIF and saves the results into a specified file. 
 If not present, the SARIF report is not generated.
 
 ## Examples
 
-### Single step example
+### Individual Step example
 
 A typical new step in an existing workflow would look like this:
 
@@ -81,7 +84,7 @@ A typical new step in an existing workflow would look like this:
 
 ### Full workflow example
 
-A typical workflow which invokes dynamically an endpoint to obtain a token and then scans the API would look like this:
+A typical workflow which dynamically invokes an endpoint to obtain a token and then scans the API would look like this:
 
 ```yaml
 name: "42Crunch API Security Dynamic Scan"
@@ -139,17 +142,17 @@ jobs:
             path: 42Crunch_ScanReport_${{ github.run_id }}.SARIF
             if-no-files-found: error  
 ```
-## Viewing SARIF Files in VisualStudio Code
+## Viewing SARIF Files in Visual Studio Code
 
-Microsoft provides a [SARIF viewer extension](https://marketplace.visualstudio.com/items?itemName=MS-SarifVSCode.sarif-viewer) you can install into VisualStudio code. Used in conjunction with [42Crunch extension](https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi), it helps you view issues found by 42Crunch Audit within the OpenAPI file.
+Microsoft provides a [SARIF viewer extension](https://marketplace.visualstudio.com/items?itemName=MS-SarifVSCode.sarif-viewer) you can install into Visual Studio Code. Used in conjunction with [42Crunch extension](https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi), it helps you view issues found by 42Crunch Audit within the OpenAPI file.
 
-The SARIF extension, once connected to GitHub can directly display the issues from GitHub Code Scanning.
+The SARIF extension, once connected to GitHub, can directly display the issues from GitHub Code Scanning.
 
 ![](./graphics/SARIFinVSCode.png)
 
 ## Tutorial
 
-If you want to test this action with a sample API, you can follow the tutorial [here](https://github.com/42crunch/apisecurity-tutorial). This repository contains a sample API, and a workflow that will scan it for vulnerabilities. 
+If you want to test this action with a sample API, you can follow the tutorial [here](https://github.com/42crunch/apisecurity-tutorial). This repository contains a sample API and a workflow that will scan it for vulnerabilities. 
 
 ## Support
 
