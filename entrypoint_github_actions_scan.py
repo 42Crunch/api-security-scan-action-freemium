@@ -119,7 +119,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     if running_config.scan_report:
         scan_output_report = running_config.scan_report
     else:
-        scan_output_report = f"{running_config.api_definition}.{os.urandom(10).hex()}.audit-report.json"
+        scan_output_report = f"{running_config.api_definition}.{os.urandom(10).hex()}.scan-report.json"
 
     ## Is debug mode enabled?
     logger.debug("Running in debug mode, will display all commands output")
