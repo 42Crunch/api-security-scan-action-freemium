@@ -9,11 +9,11 @@ APIs which thoroughly enforce compliance to an established contract are far more
 
 You can use this action to test an individual API, identified by its API contract (OpenAPI file). You will need to supply a target URL for the API, and a credential to invoke the API. 
 
-[You](https://img.shields.io/badge/just%20the%20message-8A2BE2) can learn more about 42Crunch Scan by watching a 5 minute introduction video  [here](https://42crunch.com/free-user-faq/).
+You can learn more about 42Crunch Scan by watching a 5 minute introduction video  [here](https://42crunch.com/free-user-faq/).
 
-![](https://img.shields.io/badge/Warning-orange)we recommend that you do <u>not</u> target a production system. While the tool does not try to inject malicious payloads, it is possible that the API implementation is not resilient enough to handle the tests, and may crash or behave unexpectedly. 
+![](https://img.shields.io/badge/Warning-orange)  We recommend that you do <u>not</u> target a production system. While the tool does not try to inject malicious payloads, it is possible that the API implementation is not resilient enough to handle the tests, and may crash or behave unexpectedly. 
 
-![](https://img.shields.io/badge/Please%20read-red)You may only use 42Crunch Scan against APIs that you own, but not those of third parties.
+![](https://img.shields.io/badge/Please%20read-red)  You may only use 42Crunch Scan against APIs that you own, but not those of third parties.
 
 ## Action inputs
 
