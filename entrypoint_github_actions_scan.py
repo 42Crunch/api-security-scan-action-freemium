@@ -159,6 +159,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         stdout, stderr = execute(scan_cmd, capture_output=True)
 
         if running_config.log_level == "debug":
+            logger.debug("Scan command output:")
             logger.debug(stdout)
             logger.debug(stderr)
 
@@ -202,10 +203,6 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
 
     try:
         stdout, stderr = execute(cmd, capture_output=True)
-
-        if running_config.log_level == "debug":
-            logger.debug(stdout)
-            logger.debug(stderr)
 
     except ExecutionError as e:
         display_header("Convert to SARIF command failed", str(e))
