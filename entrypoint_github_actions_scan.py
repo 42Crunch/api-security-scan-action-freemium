@@ -142,7 +142,6 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         "-a", running_config.api_credential,
         "-t", running_config.target_url,
         "--github-repo", running_config.github_repository,
-        # "--github-repo", "freemium-eval-new",
         "--github-user", running_config.github_repository_owner,
         "--github-org", running_config.github_organization,
         "--log-level", running_config.log_level
