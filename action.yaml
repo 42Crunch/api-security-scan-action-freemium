@@ -29,6 +29,9 @@ inputs:
   sarif-report:
     description: "SARIF report"
     required: false
+  scan-report:
+    description: "Scan report file"
+    required: false
 
 
 branding:

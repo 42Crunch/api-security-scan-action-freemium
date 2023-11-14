@@ -27,6 +27,7 @@ class RunningConfiguration:
     api_definition: str = None
     api_credential: str = None
 
+    scan_report: str = None
     sarif_report: str = None
 
     # Internal parameters
@@ -68,6 +69,7 @@ RunningConfiguration:
                 "log-level": "str",
                 "data-enrich": "bool",
                 "sarif-report": "str",
+                "scan-report": "str"
             },
             envs={
                 "github_repository": "str",
@@ -112,7 +114,10 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     logger.debug(running_config)
 
     # Create output file name for report from input file name
-    scan_output_report = f"{running_config.api_definition}.{os.urandom(10).hex()}.audit-report.json"
+    if running_config.scan_report:
+        scan_output_report = running_config.scan_report
+    else:
+        scan_output_report = f"{running_config.api_definition}.{os.urandom(10).hex()}.audit-report.json"
 
     ## Is debug mode enabled?
     logger.debug("Running in debug mode, will display all commands output")
