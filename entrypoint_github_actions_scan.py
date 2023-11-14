@@ -110,13 +110,23 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     logger.debug(running_config)
 
     # Create output file name for report from input file name
-    openapi_file = os.path.splitext(os.path.basename(running_config.api_definition))[0]
-    scan_output_report = os.path.join(base_dir, f"{openapi_file}.audit-report.json")
+    scan_output_report = f"{running_config.api_definition}.audit-report.json"
+
+    if logger.level == logging.DEBUG:
+        logger.debug("Running in debug mode, will display all commands output")
+
+        ## Exist the api-definition file?
+        if not os.path.exists(running_config.api_definition):
+            msg = f"API definition file not found: {running_config.api_definition}"
+        else:
+            msg = f"API definition file found: {running_config.api_definition}"
+
+        logger.debug(msg)
 
     #
     # Run 42Crunch cli scan
     #
-    audit_cmd = [
+    scan_cmd = [
         "42ctl",
         "scan",
         "run",
@@ -132,10 +142,10 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     ]
 
     logger.debug("Executing scan command:")
-    logger.debug(audit_cmd)
+    logger.debug(scan_cmd)
 
     try:
-        execute(audit_cmd)
+        execute(scan_cmd)
     except ExecutionError as e:
         display_header("Audit command failed", str(e))
         exit(1)
