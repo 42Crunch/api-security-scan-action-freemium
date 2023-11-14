@@ -164,7 +164,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     if running_config.sarif_report:
         sarif_report = running_config.sarif_report
     else:
-        sarif_report = os.path.join(base_dir, f"{openapi_file}.sarif")
+        sarif_report = os.path.join(base_dir, f"{running_config.api_definition}.sarif")
 
     cmd = [
         "42ctl",
