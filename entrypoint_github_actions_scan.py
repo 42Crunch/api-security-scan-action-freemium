@@ -158,7 +158,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     try:
         stdout, stderr = execute(scan_cmd, capture_output=True)
 
-        if logger.level == logging.DEBUG:
+        if running_config.log_level == "debug":
             logger.debug(stdout)
             logger.debug(stderr)
 
@@ -203,7 +203,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     try:
         stdout, stderr = execute(cmd, capture_output=True)
 
-        if logger.level == logging.DEBUG:
+        if running_config.log_level == "debug":
             logger.debug(stdout)
             logger.debug(stderr)
 
