@@ -114,16 +114,16 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     # Create output file name for report from input file name
     scan_output_report = f"{running_config.api_definition}.audit-report.json"
 
-    if logger.level == logging.DEBUG:
-        logger.debug("Running in debug mode, will display all commands output")
+    ## Is debug mode enabled?
+    logger.debug("Running in debug mode, will display all commands output")
 
-        ## Exist the api-definition file?
-        if not os.path.exists(running_config.api_definition):
-            msg = f"API definition file not found: {running_config.api_definition}"
-        else:
-            msg = f"API definition file found: {running_config.api_definition}"
+    ## Exist the api-definition file?
+    if not os.path.exists(running_config.api_definition):
+        msg = f"API definition file not found: {running_config.api_definition}"
+    else:
+        msg = f"API definition file found: {running_config.api_definition}"
 
-        logger.debug(msg)
+    logger.debug(msg)
 
     #
     # Run 42Crunch cli scan
