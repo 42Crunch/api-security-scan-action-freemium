@@ -15,7 +15,7 @@ You can learn more about 42Crunch Scan by watching a 5 minute introduction video
 
 ![](https://img.shields.io/badge/Please%20read-red)  You may only use 42Crunch Scan against APIs that you own, but not those of third parties.
 
-## Action parameters
+## Action inputs
 
 ### `api-definition`
 
@@ -64,7 +64,7 @@ If not present, the SARIF report is not generated.
 
 ## Examples
 
-### Individual Step example
+### Individual step example
 
 A typical new step in an existing workflow would look like this:
 
@@ -142,7 +142,7 @@ jobs:
             path: 42Crunch_ScanReport_${{ github.run_id }}.SARIF
             if-no-files-found: error  
 ```
-## Viewing SARIF Files in Visual Studio Code
+## Viewing SARIF files in Visual Studio Code
 
 Microsoft provides a [SARIF viewer extension](https://marketplace.visualstudio.com/items?itemName=MS-SarifVSCode.sarif-viewer) you can install into Visual Studio Code. Used in conjunction with [42Crunch extension](https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi), it helps you view issues found by 42Crunch Audit within the OpenAPI file.
 
@@ -153,6 +153,14 @@ The SARIF extension, once connected to GitHub, can directly display the issues f
 ## Tutorial
 
 If you want to test this action with a sample API, you can follow the tutorial [here](https://github.com/42crunch/apisecurity-tutorial). This repository contains a sample API and a workflow that will scan it for vulnerabilities. 
+
+## Limitations
+
+The freemium version lets you fully test 42Crunch scan features. It does have usage limitations:
+
+- Organizations on freemium service are limited to 25 scans per repository, with a maximum of three repositories per GitHub organization. The limit is reset every calendar month.
+- Only the default security quality gates (SQGs) are included.
+- Only the standard data dictionary is included.
 
 ## Support
 
