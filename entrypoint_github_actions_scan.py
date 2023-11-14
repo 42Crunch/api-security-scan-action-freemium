@@ -134,7 +134,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         "run",
         "local",
         "-b", binaries,
-        "-i", running_config.api_definition,
+        "-i", os.path.join(base_dir, running_config.api_definition),
         "-r", scan_output_report,
         "-a", running_config.api_credential,
         "-t", running_config.target_url,
