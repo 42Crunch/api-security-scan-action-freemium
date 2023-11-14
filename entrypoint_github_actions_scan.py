@@ -141,6 +141,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         "-r", scan_output_report,
         "-a", running_config.api_credential,
         "-t", running_config.target_url,
+        "--github-repo", running_config.github_repository,
         "--github-user", running_config.github_repository_owner,
         "--github-org", running_config.github_organization,
         "--log-level", running_config.log_level
@@ -150,10 +151,13 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     logger.debug(scan_cmd)
 
     try:
-        # execute(scan_cmd)
-        pass
+        execute(scan_cmd)
     except ExecutionError as e:
         display_header("Audit command failed", str(e))
+        exit(1)
+
+    if not os.path.exists(scan_output_report):
+        logger.error(display_header("Audit command failed", "Report file not found"))
         exit(1)
 
     #
@@ -170,15 +174,12 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     else:
         sarif_report = os.path.join(base_dir, f"{running_config.api_definition}.sarif")
 
-    # scan_output_report = "PhotoManager.json.report.json"
-
     cmd = [
         "42ctl",
         "scan",
         "report",
         "sarif",
         "convert",
-        # "-r", scan_output_report,
         "-r", scan_output_report,
         "-a", running_config.api_definition,
         "-o", sarif_report
