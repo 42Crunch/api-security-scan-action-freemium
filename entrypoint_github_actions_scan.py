@@ -201,10 +201,12 @@ def main():
         exit(1)
 
     # Currently, only two log levels are supported: INFO and DEBUG
-    if running_config.log_level == "DEBUG":
-        logging.basicConfig(level=logging.DEBUG)
+    if running_config.log_level == "debug":
+        logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
     else:
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+    logger.debug("Starting 42Crunch CLI scan in debug mode")
 
     # Run discovery
     scan_run(running_config, binary_path)
