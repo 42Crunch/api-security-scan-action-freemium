@@ -170,7 +170,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     else:
         sarif_report = os.path.join(base_dir, f"{running_config.api_definition}.sarif")
 
-    scan_output_report = "PhotoManager.json.report.json"
+    # scan_output_report = "PhotoManager.json.report.json"
 
     cmd = [
         "42ctl",
