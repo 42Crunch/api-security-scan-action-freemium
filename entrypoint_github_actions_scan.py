@@ -85,6 +85,7 @@ RunningConfiguration:
             data_enrich=config["data-enrich"],
             upload_to_code_scanning=config["upload-to-code-scanning"],
             sarif_report=config["sarif-report"],
+            scan_report=config["scan-report"],
             target_url=config["target-url"],
             api_definition=config["api-definition"],
             api_credential=config["api-credential"],
