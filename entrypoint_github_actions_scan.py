@@ -112,7 +112,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     logger.debug(running_config)
 
     # Create output file name for report from input file name
-    scan_output_report = f"{running_config.api_definition}.audit-report.json"
+    scan_output_report = f"{running_config.api_definition}.{os.urandom(10).hex}.audit-report.json"
 
     ## Is debug mode enabled?
     logger.debug("Running in debug mode, will display all commands output")
@@ -141,8 +141,8 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         "-r", scan_output_report,
         "-a", running_config.api_credential,
         "-t", running_config.target_url,
-        # "--github-repo", running_config.github_repository,
-        "--github-repo", "freemium-eval-new",
+        "--github-repo", running_config.github_repository,
+        # "--github-repo", "freemium-eval-new",
         "--github-user", running_config.github_repository_owner,
         "--github-org", running_config.github_organization,
         "--log-level", running_config.log_level
