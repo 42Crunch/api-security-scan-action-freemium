@@ -106,6 +106,9 @@ RunningConfiguration:
 def scan_run(running_config: RunningConfiguration, binaries: str):
     base_dir = os.getcwd()
 
+    logger.debug("Executing scan_run with those parameters:")
+    logger.debug(running_config)
+
     # Create output file name for report from input file name
     openapi_file = os.path.splitext(os.path.basename(running_config.api_definition))[0]
     scan_output_report = os.path.join(base_dir, f"{openapi_file}.audit-report.json")
@@ -127,6 +130,9 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         "--github-org", running_config.github_organization,
         "--log-level", running_config.log_level
     ]
+
+    logger.debug("Executing scan command:")
+    logger.debug(audit_cmd)
 
     try:
         execute(audit_cmd)
@@ -158,6 +164,9 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         "-a", running_config.api_definition,
         "-o", sarif_report
     ]
+
+    logger.debug("Executing convert to SARIF command:")
+    logger.debug(cmd)
 
     try:
         execute(cmd)
