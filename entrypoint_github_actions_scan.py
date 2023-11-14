@@ -147,6 +147,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         "--log-level", running_config.log_level
     ]
 
+    logger.info(f"Scanned {running_config.api_definition} with target URL: {running_config.target_url}")
     logger.debug("Executing scan command:")
     logger.debug(scan_cmd)
 
@@ -185,6 +186,8 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         "-o", sarif_report
     ]
 
+    logger.info(f"SARIF report was saved to: {sarif_report}")
+
     logger.debug("Executing convert to SARIF command:")
     logger.debug(cmd)
 
@@ -206,6 +209,8 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
             ref=running_config.github_ref,
             sarif_file_path=sarif_report
         )
+        logger.info("Successfully uploaded results to Code Scanning")
+
 
 
 def main():
