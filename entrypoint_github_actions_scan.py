@@ -44,6 +44,8 @@ RunningConfiguration:
     log_level: {self.log_level}
     data_enrich: {self.data_enrich}
     upload_to_code_scanning: {self.upload_to_code_scanning}
+    api_definition: {self.api_definition}
+    api_credential: {self.api_credential}
     sarif_report: {self.sarif_report}
     github_token: {self.github_token}
     github_repository: {self.github_repository}
