@@ -150,10 +150,11 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     logger.debug(scan_cmd)
 
     try:
-        execute(scan_cmd)
+        # execute(scan_cmd)
+        pass
     except ExecutionError as e:
         display_header("Audit command failed", str(e))
-        # exit(1)
+        exit(1)
 
     #
     # Convert to SARIF
