@@ -119,9 +119,9 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
 
     ## Exist the api-definition file?
     if not os.path.exists(running_config.api_definition):
-        msg = f"API definition file not found: {running_config.api_definition}"
+        msg = f"   API definition file not found: {running_config.api_definition}"
     else:
-        msg = f"API definition file found: {running_config.api_definition}"
+        msg = f"   API definition file found: {running_config.api_definition}"
 
     logger.debug(msg)
 
