@@ -48,6 +48,7 @@ RunningConfiguration:
     api_definition: {self.api_definition}
     api_credential: {self.api_credential}
     sarif_report: {self.sarif_report}
+    scan_report: {self.scan_report}
     github_token: {self.github_token}
     github_repository: {self.github_repository}
     github_organization: {self.github_organization}
@@ -217,7 +218,6 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
         logger.info("Successfully uploaded results to Code Scanning")
 
 
-
 def main():
     try:
         binary_path = get_binary_path()
@@ -239,7 +239,6 @@ def main():
 
     logger.debug("Starting 42Crunch CLI scan in debug mode")
 
-    # Run discovery
     scan_run(running_config, binary_path)
 
 
