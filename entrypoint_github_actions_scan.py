@@ -156,7 +156,12 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     logger.debug(scan_cmd)
 
     try:
-        execute(scan_cmd)
+        stdout, stderr = execute(scan_cmd, capture_output=True)
+
+        if logger.level == logging.DEBUG:
+            logger.debug(stdout)
+            logger.debug(stderr)
+
     except ExecutionError as e:
         display_header("Audit command failed", str(e))
         exit(1)
@@ -196,7 +201,12 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     logger.debug(cmd)
 
     try:
-        execute(cmd)
+        stdout, stderr = execute(cmd, capture_output=True)
+
+        if logger.level == logging.DEBUG:
+            logger.debug(stdout)
+            logger.debug(stderr)
+
     except ExecutionError as e:
         display_header("Convert to SARIF command failed", str(e))
         return
