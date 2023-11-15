@@ -153,7 +153,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
 
     logger.info(f"Scanned {running_config.api_definition} with target URL: {running_config.target_url}")
     logger.debug("Executing scan command:")
-    logger.debug(scan_cmd)
+    logger.debug(" ".join(scan_cmd))
 
     try:
         stdout, stderr = execute(scan_cmd, capture_output=True)
@@ -199,7 +199,7 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
     logger.info(f"SARIF report was saved to: {sarif_report}")
 
     logger.debug("Executing convert to SARIF command:")
-    logger.debug(cmd)
+    logger.debug(" ".join(cmd))
 
     try:
         stdout, stderr = execute(cmd, capture_output=True)
