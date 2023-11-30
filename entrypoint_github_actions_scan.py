@@ -5,10 +5,11 @@ import logging
 
 from dataclasses import dataclass
 
-from xliic_cli.scan.reports.sarif.convert_to_sarif import convert_to_sarif
 from xliic_sdk.scan import ScanReport
 from xliic_sdk.vendors import github_running_configuration, upload_sarif
+from xliic_cli.scan.reports.sarif.convert_to_sarif import convert_to_sarif
 from xliic_cli.scan.run.local_run import ScanExecutionConfig, run_scan_locally
+from xliic_cli.scan.reports.pdf.convert_to_pdf import create_pdf_report, RunningConfig as PDFRunningConfig
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ class RunningConfiguration:
     api_definition: str = None
     api_credential: str = None
     upload_to_code_scanning: bool = False
+    export_as_pdf: str = None
 
     scan_report: str = None
     sarif_report: str = None
@@ -49,6 +51,7 @@ RunningConfiguration:
     log_level: {self.log_level}
     enforce_sqg: {self.enforce_sqg}
     data_enrich: {self.data_enrich}
+    export_as_pdf: {self.export_as_pdf}
     upload_to_code_scanning: {self.upload_to_code_scanning}
     api_definition: {self.api_definition}
     api_credential: {self.api_credential}
@@ -76,7 +79,8 @@ RunningConfiguration:
                 "data-enrich": "bool",
                 "sarif-report": "str",
                 "scan-report": "str",
-                "enforce-sqg": "bool"
+                "enforce-sqg": "bool",
+                "export-as-pdf": "str"
             },
             envs={
                 "github_repository": "str",
@@ -90,6 +94,7 @@ RunningConfiguration:
             log_level=config["log-level"],
             data_enrich=config["data-enrich"],
             enforce_sqg=config["enforce-sqg"],
+            export_as_pdf=config["export-as-pdf"],
             upload_to_code_scanning=config["upload-to-code-scanning"],
             sarif_report=config["sarif-report"],
             scan_report=config["scan-report"],
@@ -210,6 +215,22 @@ def scan_run(running_config: RunningConfiguration):
             sarif_file_path=sarif_report
         )
         logger.debug("Successfully uploaded results to Code Scanning")
+
+    #
+    # Make PDF report
+    #
+    if running_config.export_as_pdf:
+        logger.debug(f"Generating PDF report '{running_config.export_as_pdf}'")
+
+        config = PDFRunningConfig(
+            scan_file=scan_output_report,
+            output_file=running_config.export_as_pdf,
+            source="GitHub Actions"
+        )
+
+        create_pdf_report(config)
+
+        logger.debug(f"Successfully generated PDF report '{running_config.export_as_pdf}'")
 
 
 def main():
