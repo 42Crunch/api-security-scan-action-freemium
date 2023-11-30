@@ -32,6 +32,9 @@ inputs:
   scan-report:
     description: "Scan report file"
     required: false
+  export-as-pdf:
+    description: "Export the scan report as PDF"
+    required: false
 
 
 branding:
