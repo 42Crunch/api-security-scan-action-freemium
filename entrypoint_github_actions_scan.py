@@ -5,8 +5,10 @@ import logging
 
 from dataclasses import dataclass
 
-from xliic_sdk.helpers import get_binary_path, execute
-from xliic_sdk.vendors import github_running_configuration, display_header, upload_sarif
+from xliic_cli.scan.reports.sarif.convert_to_sarif import convert_to_sarif
+from xliic_sdk.scan import ScanReport
+from xliic_sdk.vendors import github_running_configuration, upload_sarif
+from xliic_cli.scan.run.local_run import ScanExecutionConfig, run_scan_locally
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +25,14 @@ class RunningConfiguration:
     target_url: str
     log_level: str = "info"
     data_enrich: bool = False
-    upload_to_code_scanning: bool = False
     api_definition: str = None
     api_credential: str = None
+    upload_to_code_scanning: bool = False
 
     scan_report: str = None
     sarif_report: str = None
+
+    enforce_sqg: bool = False
 
     # Internal parameters
     github_token: str = None
@@ -43,6 +47,7 @@ class RunningConfiguration:
 RunningConfiguration:
     target_url: {self.target_url}
     log_level: {self.log_level}
+    enforce_sqg: {self.enforce_sqg}
     data_enrich: {self.data_enrich}
     upload_to_code_scanning: {self.upload_to_code_scanning}
     api_definition: {self.api_definition}
@@ -70,7 +75,8 @@ RunningConfiguration:
                 "log-level": "str",
                 "data-enrich": "bool",
                 "sarif-report": "str",
-                "scan-report": "str"
+                "scan-report": "str",
+                "enforce-sqg": "bool"
             },
             envs={
                 "github_repository": "str",
@@ -83,6 +89,7 @@ RunningConfiguration:
         o = cls(
             log_level=config["log-level"],
             data_enrich=config["data-enrich"],
+            enforce_sqg=config["enforce-sqg"],
             upload_to_code_scanning=config["upload-to-code-scanning"],
             sarif_report=config["sarif-report"],
             scan_report=config["scan-report"],
@@ -109,11 +116,7 @@ RunningConfiguration:
         return o
 
 
-def scan_run(running_config: RunningConfiguration, binaries: str):
-    base_dir = os.getcwd()
-
-    logger.debug("Executing scan_run with those parameters:")
-    logger.debug(running_config)
+def scan_run(running_config: RunningConfiguration):
 
     # Create output file name for report from input file name
     if running_config.scan_report:
@@ -126,91 +129,77 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
 
     ## Exist the api-definition file?
     if not os.path.exists(running_config.api_definition):
-        msg = f"   API definition file not found: {running_config.api_definition}"
-    else:
-        msg = f"   API definition file found: {running_config.api_definition}"
+        print("[!] API definition file not found")
+        exit(1)
 
-    logger.debug(msg)
+    logger.debug(f"API definition file found: {running_config.api_definition}")
 
     #
     # Run 42Crunch cli scan
     #
-    scan_cmd = [
-        "42ctl",
-        "scan",
-        "run",
-        "local",
-        "-b", binaries,
-        "-i", running_config.api_definition,
-        "-r", scan_output_report,
-        "-a", running_config.api_credential,
-        "-t", running_config.target_url,
-        "--github-repo", running_config.github_repository,
-        "--github-user", running_config.github_repository_owner,
-        "--github-org", running_config.github_organization,
-        "--log-level", running_config.log_level
-    ]
+    scan_config = ScanExecutionConfig(
+        target_url=running_config.target_url,
+        openapi_file=running_config.api_definition,
+        api_credentials=running_config.api_credential,
 
-    logger.info(f"Scanned {running_config.api_definition} with target URL: {running_config.target_url}")
-    logger.debug("Executing scan command:")
-    logger.debug(" ".join(scan_cmd))
+        enforce_sqg=running_config.enforce_sqg,
+
+        output_format="json",
+        output_file=scan_output_report,
+        output_overwrite=True,
+
+        enrich=running_config.data_enrich,
+        log_level=running_config.log_level,
+        github_org=running_config.github_organization,
+        github_repository=running_config.github_repository,
+        github_user=running_config.github_repository_owner,
+
+        dev_env=True
+    )
 
     try:
-        stdout, stderr = execute(scan_cmd, capture_output=True)
-
-        if running_config.log_level == "debug":
-            logger.debug("Scan command output:")
-            logger.debug(stdout)
-            logger.debug(stderr)
-
-    except ExecutionError as e:
-        display_header("Audit command failed", str(e))
-        exit(1)
-
-    if not os.path.exists(scan_output_report):
-        logger.error(display_header("Audit command failed", "Report file not found"))
+        quota_msg, sqg = run_scan_locally(scan_config)
+    except Exception as e:
+        logger.error(f"[!] {e}")
         exit(1)
 
     #
     # Convert to SARIF
     #
-
-    # Related OpenAPI file.
-    #
-    # IMPORTANT: FOR GitHub Code Scanning, the OpenAPI file must be relative to the repository root,
-    # and can't start with: /github/workspace
-
     if running_config.sarif_report:
         sarif_report = running_config.sarif_report
     else:
-        sarif_report = os.path.join(base_dir, f"{running_config.api_definition}.sarif")
+        base_dir = os.path.dirname(running_config.api_definition)
+        base_name = os.path.splitext(os.path.basename(running_config.api_definition))[0]
+        sarif_report = os.path.join(base_dir, f"{base_name}.sarif")
 
-    cmd = [
-        "42ctl",
-        "scan",
-        "report",
-        "sarif",
-        "convert",
-        "-r", scan_output_report,
-        "-a", running_config.api_definition,
-        "-o", sarif_report
-    ]
+    convert_to_sarif(
+        openapi_file_path=running_config.api_definition,
+        report_file_path=scan_output_report,
+        output_report_path=sarif_report
+    )
 
-    logger.info(f"SARIF report was saved to: {sarif_report}")
+    #
+    # Show scan results
+    #
+    # We print the results to the console, so that they are visible in the GitHub Actions logs
+    report = ScanReport.from_file(scan_output_report)
 
-    logger.debug("Executing convert to SARIF command:")
-    logger.debug(" ".join(cmd))
+    ## Global score
+    print(f"Scanned {running_config.api_definition} with target URL: {running_config.target_url}")
+    print(f"Executed Tests: {report.executed_tests}")
+    print(f"Potential Tests: {report.potential_tests}")
+    print(f"OWASP TOP 10 Issues found: {report.owasp_top_10_issues}")
 
-    try:
-        stdout, stderr = execute(cmd, capture_output=True)
+    print(f"\nSARIF report was saved to: {sarif_report}")
+    print("Successfully uploaded results to Code Scanning\n")
 
-    except ExecutionError as e:
-        display_header("Convert to SARIF command failed", str(e))
-        return
+    print(quota_msg)
 
     #
     # Upload to GitHub code scanning
     #
+
     if running_config.upload_to_code_scanning:
         logger.debug("Uploading SARIF report to GitHub code scanning")
         upload_sarif(
@@ -220,31 +209,37 @@ def scan_run(running_config: RunningConfiguration, binaries: str):
             ref=running_config.github_ref,
             sarif_file_path=sarif_report
         )
-        logger.info("Successfully uploaded results to Code Scanning")
+        logger.debug("Successfully uploaded results to Code Scanning")
 
 
 def main():
     try:
-        binary_path = get_binary_path()
-    except ExecutionError as e:
-        logger.error(display_header("Unable to get 42c-ast binary", str(e)))
-        exit(1)
-
-    try:
         running_config = RunningConfiguration.from_github()
     except ValueError as e:
-        logger.error(display_header("Invalid configuration", str(e)))
+        print(f"[!] {e}")
         exit(1)
 
-    # Currently, only two log levels are supported: INFO and DEBUG
+    # -------------------------------------------------------------------------
+    # Setup logging
+    # -------------------------------------------------------------------------
+
+    ## Logger handlers for console
+    console = logging.StreamHandler()
+
     if running_config.log_level == "debug":
-        logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
+        logger.setLevel(logging.DEBUG)
+        console.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
     else:
-        logging.basicConfig(level=logging.INFO, format="%(message)s")
+        logger.setLevel(logging.INFO)
+        console.setFormatter(logging.Formatter("%(message)s"))
 
-    logger.debug("Starting 42Crunch CLI scan in debug mode")
+    logger.addHandler(console)
 
-    scan_run(running_config, binary_path)
+    # -------------------------------------------------------------------------
+    # Run scan
+    # -------------------------------------------------------------------------
+
+    scan_run(running_config)
 
 
 # Main script execution
