@@ -88,6 +88,11 @@ def main():
             else:
                 os.environ[env_name] = str(env_value)
 
+    #
+    # Set Default Environment Variables
+    #
+    os.environ['42C_DEV_TESTING'] = 'true'
+
     # Load GitHub action Python script file
     with monkey_patched():
         __import__('entrypoint_github_actions_scan').main()
