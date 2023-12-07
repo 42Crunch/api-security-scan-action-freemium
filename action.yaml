@@ -35,7 +35,10 @@ inputs:
   export-as-pdf:
     description: "Export the scan report as PDF"
     required: false
-
+  enforce-sqg:
+    description: "Enforce Security Quality Gate"
+    required: false
+    default: "false"
 
 branding:
   icon: "eye"
