@@ -6,9 +6,9 @@ import logging
 from dataclasses import dataclass
 
 from xliic_sdk.scan import ScanReport
+from xliic_cli.freemium.scan import run_scan_locally, ScanExecutionConfig
 from xliic_sdk.vendors import github_running_configuration, upload_sarif
 from xliic_cli.scan.reports.sarif.convert_to_sarif import convert_to_sarif
-from xliic_cli.scan.run.local_run import ScanExecutionConfig, run_scan_locally
 from xliic_cli.scan.reports.pdf.convert_to_pdf import create_pdf_report, RunningConfig as PDFRunningConfig
 
 logger = logging.getLogger(__name__)
@@ -231,6 +231,26 @@ def scan_run(running_config: RunningConfiguration):
         create_pdf_report(config)
 
         logger.debug(f"Successfully generated PDF report '{running_config.export_as_pdf}'")
+
+    #
+    # Check if pipeline should fail
+    #
+
+    ## If SQG is found, fail the pipeline
+    if sqg and sqg.has_to_fail(running_config.enforce_sqg):
+        print(f"\n[!] The API failed the security quality gate 'Default Audit SQG'\n")
+        exit(1)
+
+    #
+    # Clean up?
+    #
+
+    ## Remove scan report
+    if not running_config.scan_report:
+        try:
+            os.remove(scan_output_report)
+        except:
+            ...
 
 
 def main():
