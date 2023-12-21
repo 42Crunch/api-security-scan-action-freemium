@@ -6,6 +6,7 @@ import logging
 from dataclasses import dataclass
 
 from xliic_sdk.scan import ScanReport
+from xliic_sdk.helpers import QuotaExceededError
 from xliic_cli.freemium.scan import run_scan_locally, ScanExecutionConfig
 from xliic_sdk.vendors import github_running_configuration, upload_sarif
 from xliic_cli.scan.reports.sarif.convert_to_sarif import convert_to_sarif
@@ -164,6 +165,13 @@ def scan_run(running_config: RunningConfiguration):
 
     try:
         quota_msg, sqg = run_scan_locally(scan_config)
+
+    except QuotaExceededError as e:
+        print()
+        print(str(e))
+        print()
+        exit(1)
+
     except Exception as e:
         logger.error(f"[!] {e}")
         exit(1)
