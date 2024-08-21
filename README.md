@@ -23,7 +23,7 @@ Filename of the API to scan, relative to the workspace root, for example `myOAS.
 
 ### `api-credential`
 
-The API key or token required to invoke the API hosted at `target-url` - This value can come from a GitHub secret or can be dynamically obtained from a previous pipeline step.
+The API key or token required to invoke the API hosted at `target-url`. This value can come from a GitHub secret or can be dynamically obtained from a previous pipeline step, as per the example below.
 
 ### `target-url`
 
@@ -54,13 +54,22 @@ Default is `INFO`.
 
 ### `data-enrich`
 
-Enriches the OpenAPI file by leveraging the default data dictionary. For each property with a standard format (such as uuid or date-time), patterns and constraints will be added to the OpenAPI file before running the scan. 
-Default is ` true`.
+Enriches the OpenAPI file by leveraging the default data dictionary. For each property with a standard format (such as uuid or date-time), patterns and constraints will be added to the OpenAPI file before running the scan.
+
+Default is ` false`.
 
 ### `sarif-report`
 
 Converts the raw scan JSON format to SARIF and saves the results into a specified file. 
 If not present, the SARIF report is not generated.
+
+### `export-as-pdf`
+
+If set, this action exports a summary of the scan report as a PDF file. If not present, the PDF report is not generated.
+
+### `scan-report`
+
+If set, this action saves the scan report in the specified file in JSON format. If not present, the scan report is not saved.
 
 ## Examples
 
@@ -79,7 +88,9 @@ A typical new step in an existing workflow would look like this:
             target-url: ${{ env.TARGET_URL }}
             upload-to-code-scanning: false
             log-level: info
-            sarif-report: 42Crunch_AuditReport_${{ github.run_id }}.SARIF
+            sarif-report: 42Crunch_ScanReport_${{ github.run_id }}.SARIF
+            scan-report: 42Crunch_RawReport_${{ github.run_id }}.json
+            export-as-pdf: 42Crunch_ScanReport_${{ github.run_id }}.pdf
 ```
 
 ### Full workflow example
@@ -134,6 +145,8 @@ jobs:
             target-url: ${{ env.TARGET_URL }}
             log-level: info
             sarif-report: 42Crunch_ScanReport_${{ github.run_id }}.SARIF
+            scan-report: 42Crunch_RawReport_${{ github.run_id }}.json
+            export-as-pdf: 42Crunch_ScanReport_${{ github.run_id }}.pdf
       - name: save-scan-report
         if: always()        
         uses: actions/upload-artifact@v3
@@ -144,13 +157,13 @@ jobs:
 ```
 ## Viewing SARIF files in Visual Studio Code
 
-Microsoft provides a [SARIF viewer extension](https://marketplace.visualstudio.com/items?itemName=MS-SarifVSCode.sarif-viewer) you can install into Visual Studio Code. Used in conjunction with [42Crunch extension](https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi), it helps you view issues found by 42Crunch Audit within the OpenAPI file.
+Microsoft provides a [SARIF viewer extension](https://marketplace.visualstudio.com/items?itemName=MS-SarifVSCode.sarif-viewer) you can install into Visual Studio Code. Used in conjunction with [42Crunch extension](https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi), it helps you view issues found by 42Crunch Scan within the OpenAPI file.
 
 The SARIF extension, once connected to GitHub, can directly display the issues from GitHub Code Scanning.
 
 ![](./graphics/SARIFinVSCode.png)
 
-## Tutorial
+## Testing this action
 
 If you want to test this action with a sample API, you can follow the tutorial [here](https://github.com/42crunch/apisecurity-tutorial). This repository contains a sample API and a workflow that will scan it for vulnerabilities. 
 
